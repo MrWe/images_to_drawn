@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.File;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -19,11 +20,33 @@ public class Main {
         Change these
          */
         String path = "17";
-        int numCentroids = 500;
+        int numCentroids = 2000;
+
+        //BufferedImage img = readImage(path);
+
+        ArrayList<BufferedImage> images = new ArrayList<>();
 
 
-        BufferedImage img = readImage(path);
+        File dir = new File("TestImages/");
+        File[] directoryListing = dir.listFiles();
+        if (directoryListing != null) {
+            for (File child : directoryListing) {
+                System.out.println(child);
+                try {
+                    BufferedImage img = ImageIO.read(child);
+                    images.add(img);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
+        for (int i = 0; i < images.size(); i++) {
+            run(images.get(i), numCentroids, Integer.toString(i));
+        }
+    }
+
+    static void run(BufferedImage img, int numCentroids, String name){
         ArrayList<Individual> individuals = new ArrayList<>();
 
 
@@ -51,6 +74,7 @@ public class Main {
         Create individuals
          */
 
+
         individuals.add(new Individual(centroids));
 
 
@@ -71,8 +95,7 @@ public class Main {
         System.out.println(centroids.get(0).getOverallDeviation());
         System.out.println(centroids.get(0).getEdgeValue());
 
-        writeImage(path, img);
-
+        writeImage(name, img);
     }
 
 
@@ -152,8 +175,8 @@ public class Main {
     static BufferedImage changeImage(BufferedImage img, Node node, Centroid centroid) {
         //Color c = Color.WHITE;
         //if(node.getColor() == Color.BLACK) {
-            Color c = new Color(centroid.getAvgColor().getRGB());
-          //  c = Color.BLACK;
+        Color c = new Color(centroid.getAvgColor().getRGB());
+        //  c = Color.BLACK;
         //}
 
         img.setRGB((int) node.getX(), (int) node.getY(), c.getRGB());
